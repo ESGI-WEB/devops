@@ -49,6 +49,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     vm_size    = "Standard_B2s"
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   tags = {
     environment = "DevOps Project"
   }
@@ -60,4 +64,18 @@ resource "azurerm_public_ip" "public_ip" {
   location            = var.location
   resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
   allocation_method   = "Dynamic"
+}
+
+# Access to the ACR
+resource "azurerm_role_assignment" "acr_role" {
+  principal_id                     = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+  role_definition_name             = "AcrPull"
+  scope                            = azurerm_container_registry.acr.id
+  skip_service_principal_aad_check = true
+}
+
+resource "azurerm_role_assignment" "user_role" {
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPush"
+  principal_id         =  var.user_id
 }

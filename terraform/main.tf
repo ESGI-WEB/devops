@@ -41,7 +41,8 @@ resource "azurerm_public_ip" "public_ip" {
   name                = "PublicIP"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg_main.name
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
 # Azure Kubernetes Service (AKS) Cluster

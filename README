@@ -25,14 +25,14 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 
 
-// et la c'est le drame, rien ne se passe
+// et la c'est le drame, rien ne se passe, normalement en suivant la commande qui est proposé pour voir les services, il devrait y avoir une external IP, mais ca reste en pending
 
 helm install ingress-nginx ingress-nginx/ingress-nginx \
   --create-namespace \
   --namespace ingress-basic \
   --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
 
-Normalement qqch du genre avec la bonne ip des outputs devrait marcher
+// Normalement qqch du genre avec la bonne ip des outputs devrait marcher, mais même soucis pas d'ip allouée
 helm install ingress-nginx ingress-nginx/ingress-nginx \
     --namespace ingress-basic \
     --create-namespace \

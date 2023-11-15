@@ -1,3 +1,43 @@
 
 
 ## Ecrivez ici les inscriptions et explications pour déployer l'infrastructure et l'application sur Azure
+
+
+# TODO Login Azure et terraform
+
+# cd terraform
+# terraform init
+# terraform plan
+# terraform apply
+
+Changer le registry_name dans le fichier terraform.tfvars
+
+# build docker
+az acr login --name registrywadouxmorin
+cd ../flask-app
+docker build -t registrywadouxmorin.azurecr.io/flask-app:latest .
+docker push registrywadouxmorin.azurecr.io/flask-app:latest
+
+
+az aks get-credentials --overwrite-existing -n AKSCluster -g rg-esgi-wadoux-morin
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+
+// et la c'est le drame, rien ne se passe
+
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --create-namespace \
+  --namespace ingress-basic \
+  --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+
+Normalement qqch du genre avec la bonne ip des outputs devrait marcher
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+    --namespace ingress-basic \
+    --create-namespace \
+    --set controller.replicaCount=2 \
+    --set controller.nodeSelector."kubernetes\.io/os"=linux \
+    --set controller.service.loadBalancerIP=<IP_PUBLIQUE> \
+    --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal"=false \
+    --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz

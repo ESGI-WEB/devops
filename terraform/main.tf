@@ -25,7 +25,7 @@ resource "azurerm_resource_group" "rg_main" {
 
 # Azure Container Registry (ACR)
 resource "azurerm_container_registry" "acr" {
-  name                     = "ContainerRegistry"
+  name                     = var.registry_name
   resource_group_name      = azurerm_resource_group.rg_main.name
   location                 = azurerm_resource_group.rg_main.location
   sku                      = "Standard"
@@ -36,12 +36,30 @@ resource "azurerm_container_registry" "acr" {
   }
 }
 
+# Public IP in the Kubernetes resource group
+resource "azurerm_public_ip" "public_ip" {
+  name                = "PublicIP"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg_main.name
+  allocation_method   = "Dynamic"
+}
+
 # Azure Kubernetes Service (AKS) Cluster
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = "AKSCluster"
   location            = azurerm_resource_group.rg_main.location
   resource_group_name = azurerm_resource_group.rg_main.name
   dns_prefix          = "aksdns"
+
+  depends_on = [azurerm_public_ip.public_ip]
+
+  network_profile {
+    network_plugin = "azure"
+    load_balancer_sku = "standard"
+    load_balancer_profile {
+      outbound_ip_address_ids = [azurerm_public_ip.public_ip.id]
+    }
+  }
 
   default_node_pool {
     name       = "default"
@@ -58,24 +76,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 }
 
-# Public IP in the Kubernetes resource group
-resource "azurerm_public_ip" "public_ip" {
-  name                = "PublicIP"
-  location            = var.location
-  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
-  allocation_method   = "Dynamic"
-}
-
 # Access to the ACR
 resource "azurerm_role_assignment" "acr_role" {
   principal_id                     = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
   role_definition_name             = "AcrPull"
   scope                            = azurerm_container_registry.acr.id
-  skip_service_principal_aad_check = true
 }
 
 resource "azurerm_role_assignment" "user_role" {
-  scope                = azurerm_container_registry.acr.id
+  principal_id = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
   role_definition_name = "AcrPush"
-  principal_id         =  var.user_id
+  scope = azurerm_container_registry.acr.id
 }

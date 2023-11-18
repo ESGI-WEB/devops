@@ -36,31 +36,12 @@ resource "azurerm_container_registry" "acr" {
   }
 }
 
-# Public IP in the Kubernetes resource group
-resource "azurerm_public_ip" "public_ip" {
-  name                = "PublicIP"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg_main.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-}
-
 # Azure Kubernetes Service (AKS) Cluster
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = "AKSCluster"
   location            = azurerm_resource_group.rg_main.location
   resource_group_name = azurerm_resource_group.rg_main.name
   dns_prefix          = "aksdns"
-
-  depends_on = [azurerm_public_ip.public_ip]
-
-  network_profile {
-    network_plugin = "azure"
-    load_balancer_sku = "standard"
-    load_balancer_profile {
-      outbound_ip_address_ids = [azurerm_public_ip.public_ip.id]
-    }
-  }
 
   default_node_pool {
     name       = "default"
@@ -75,6 +56,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
   tags = {
     environment = "DevOps Project"
   }
+}
+
+# Public IP in the Kubernetes resource group
+resource "azurerm_public_ip" "public_ip" {
+  name                = "PublicIP"
+  location            = azurerm_kubernetes_cluster.aks.location
+  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
 # Access to the ACR

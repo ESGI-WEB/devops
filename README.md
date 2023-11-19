@@ -120,7 +120,7 @@ Il est nécessaire d'avoir docker d'installé sur votre machine pour pouvoir bui
 - Récupérer l'adresse IP public et la stocker dans une variable
 
 ```bash
-    ip_address=$(terraform output public_ip_address)
+  ip_address=$(terraform output public_ip_address | sed 's/"//g')
 ```
 
 - Mettre en place l'ingress controller
@@ -130,7 +130,7 @@ Il est nécessaire d'avoir docker d'installé sur votre machine pour pouvoir bui
         --namespace ingress-nginx \
         --create-namespace \
         -f controler.yaml \
-        --set controller.service.loadBalancerIP=$ip_address
+        --set controller.service.loadBalancerIP="$ip_address"
  ```
 
 - Se placer dans le dossier kubernetes du projet

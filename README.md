@@ -4,6 +4,8 @@
 
 - Installer [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) selon votre OS
 - Installer [Terraform](https://developer.hashicorp.com/terraform/downloads) selon votre OS
+- Installer [Docker](https://docs.docker.com/get-docker/) selon votre OS
+- Installer [Helm](https://helm.sh/docs/intro/install/) selon votre OS
 
 ## Azure
 
@@ -124,7 +126,6 @@ Il est nécessaire d'avoir docker d'installé sur votre machine pour pouvoir bui
 - Mettre en place l'ingress controller
 
 ```bash    
-    # Installer Helm avec l'adresse IP récupérée
     helm install ingress-nginx ingress-nginx/ingress-nginx \
         --namespace ingress-nginx \
         --create-namespace \

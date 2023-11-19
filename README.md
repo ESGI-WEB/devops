@@ -1,8 +1,11 @@
 # Installation
 
-## Azure
+## Prérequis
 
 - Installer [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) selon votre OS
+- Installer [Terraform](https://developer.hashicorp.com/terraform/downloads) selon votre OS
+
+## Azure
 
 - Connexion à Azure
     

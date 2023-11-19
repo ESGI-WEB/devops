@@ -107,14 +107,20 @@ Il est nécessaire d'avoir docker d'installé sur votre machine pour pouvoir bui
 
 ## Déploiement de l'application
 
-- Mettre en place l'ingress controller
+- Pour mettre en place l'ingress controller, il faut aller dans le dossier terraform
 ```bash
     cd ../terraform
 ```
 
+- Récupérer l'adresse IP public et la stocker dans une variable
+
 ```bash
-    ip_address=$(terraform output -raw public_ip_address)
-    
+    ip_address=$(terraform output public_ip_address)
+```
+
+- Mettre en place l'ingress controller
+
+```bash    
     # Installer Helm avec l'adresse IP récupérée
     helm install ingress-nginx ingress-nginx/ingress-nginx \
         --namespace ingress-nginx \

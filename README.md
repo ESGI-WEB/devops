@@ -1,3 +1,7 @@
+# Devops
+
+Projet développé par Laurie Morin et Nicolas Wadoux
+
 # Installation
 
 ## Prérequis

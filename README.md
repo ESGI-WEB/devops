@@ -62,7 +62,7 @@ Elle servira à vérifier que l'application est bien accessible a l'aide de votr
 
 ## Docker
 
-Il est nécessaire d'avoir docker d'installé sur votre machine pour pouvoir build les images et les push sur le registry.
+Il est nécessaire d'avoir docker d'installé sur votre machine pour pouvoir build les images et les push sur le registry. Vous devez l'avoir lancer sur votre ordinateur, sinon vous aurez une erreur "Cannot connect to the Docker daemon. Is the docker daemon running?"
 
 - Vous connecter au registry Azure que nous avons créé avec Terraform
 

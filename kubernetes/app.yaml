@@ -38,3 +38,8 @@ spec:
           image: registrywadouxmorin.azurecr.io/flask-app:latest
           ports:
             - containerPort: 8000
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
